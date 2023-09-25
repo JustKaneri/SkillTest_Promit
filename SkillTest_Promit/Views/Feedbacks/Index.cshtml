@@ -1,17 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Web
-@model IEnumerable<Feedback>
-
-
-@{
-    int currentPage = int.Parse(ViewData["pageNumber"].ToString());
-    int maxPages = Model.Count() / 5;
-    if (maxPages * 5 < Model.Count())
-        maxPages++;
-
-    List<Feedback> feedbacks =  Model.Take(currentPage * 5).ToList();        
-}   
-
-<div>
+﻿<div>
     <table class="table table-bordered table-striped" style="width:100%">
         <thead>
             <tr>
@@ -26,32 +13,69 @@
                 </th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var item in feedbacks)
-            {
-                <tr>
-                    <td width="50%">
-                        @item.Mark
-                    </td>
-                    <td width="30%">
-                        @item.Posivite.Substring(0,item.Posivite.Length>30?30:item.Posivite.Length)...
-                    </td>
-                    <td width="10%">
-                        @item.CreateDate.ToString("dd-MM-yyyy")
-                    </td>
-                    <td width="10%">
-                        <a id="btn-record" asp-controller="Feedbacks" asp-action="Detailed" asp-route-Id="@(item.Id)" class="btn btn-outline-primary" style="width:100%">
-                            Подробнее
-                        </a>
-                    </td>
-                </tr>
-            }
+        <tbody class="tbody">
+    
         </tbody>
     </table>
-    @if (currentPage != maxPages)
-    {
-        <a id="btn-record" asp-action="Index" asp-route-pageNumber="@(currentPage+=1)" class="btn btn-outline-primary" style="width:100%">
-            Еще записи
-        </a>
-    }
+    <a id="btn-record" onclick="GetData()" class="btn btn-outline-primary" style="width:100%" >
+        Еще записи
+    </a>
 </div>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+    <script>
+        var currentPage = 1;
+        var totalPage = 0;
+        GetData();
+          
+        function GetData(){
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetFeedbacks")",
+                data: jQuery.param({ pageNumber: currentPage }),
+                dataType: "json",
+                success: function (data) {
+                    NextPage();
+                    GetTotalPage(data.total);
+
+                    var html = '';
+                    $.each(data.data, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.mark + '</td>';
+                        html += '<td>' + item.posivite.substring(0, 30) + '... </td>';
+                        html += '<td>' + item.createDate + '</td>';
+                        html += '<td><a onclick="DetailedInfo('+item.id +')" class="btn btn-outline-primary" style="width:100%"> Подробнее</a></td > ';
+                        html += '</tr>';
+                    });
+                    $('.tbody').html(html);
+                },
+
+            })
+        }
+
+        function NextPage(){
+            if(currentPage!=totalPage){
+                currentPage++;
+            }
+           
+            if(currentPage == totalPage){
+                $("#btn-record").css({"display":"none"})
+            }
+        }
+
+        function GetTotalPage(totalRecord){
+            totalPage = Math.round(totalRecord/5);
+            if(totalPage*5 != totalRecord)
+                totalPage++
+        }
+
+        function DetailedInfo(id){
+            window.location.href = window.location.origin + "/Feedback?id=" + id;
+        }
+
+    </script>
+}

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SkillTest_Promit.Interface;
+using SkillTest_Promit.Models;
 
 namespace SkillTest_Promit.Controllers
 {
@@ -13,17 +14,21 @@ namespace SkillTest_Promit.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int pageNumber = 1)
+        public async Task<IActionResult> Index()
         {
             var feedbacks = await _feedbackRepository.GetAllAsync();
-            ViewData[nameof(pageNumber)] = pageNumber;
             return View(feedbacks);
         }
 
-        [HttpGet]
-        public IActionResult Detailed(int Id)
+        public async Task<JsonResult> GetFeedbacks(int pageNumber)
         {
-            return Redirect("/Feedback?id="+Id);
+            var feedbacks = await _feedbackRepository.GetAllAsync();
+
+            var result = feedbacks.Take(pageNumber * 5).ToList();
+
+            var obj = new{total=feedbacks.Count,data=result};
+
+            return new JsonResult(obj);
         }
     }
 }
