@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Feedback>
+
+<div>
+    <table class="table table-bordered table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>
+                    Оценка
+                </th>
+                <th>
+                    Что понравилось
+                </th>
+                <th>
+                    Дата создания
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td width="50%">
+                        @item.Mark
+                    </td>
+                    <td width="30%">
+                        @item.Posivite.Substring(0,item.Posivite.Length>30?30:item.Posivite.Length)...
+                    </td>
+                    <td width="10%">
+                        @item.CreateDate.ToString("dd-MM-yyyy")
+                    </td>
+                    <td width="10%">
+                        <a id="btn-record" onclick="Cofirm(@item.Id)" class="btn btn-outline-danger" style="width:100%">
+                            Удалить
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<input style="visibility:hidden" id="EmpId"/>
+
+<div class="modal" id="DeleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete</h5>
+                <button type="button" onclick="Hid()" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены что хотите удалить данный отзыв</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="Delete()" class="btn btn-primary">Удалить</button>
+                <button type="button" onclick="Hid()" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script>       
+        function Cofirm(id){
+            $("#EmpId").val(id);
+            $("#DeleteModal").modal("show");
+        }
+        function Hid(){
+            $("#DeleteModal").modal("hide");
+        }
+        function Delete(){
+            var id = $("#EmpId").val();
+            $.ajax({
+                type:"Post",
+                url: "/administrator/delete",
+                data: jQuery.param({id:id}),
+                success: function(data){
+		            alert("Успешно");
+                    location.reload();
+	            },
+                error: function(data){
+                    location.reload();
+	            }
+
+            });
+        }
+    </script>
+}

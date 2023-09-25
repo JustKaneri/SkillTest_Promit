@@ -1,0 +1,57 @@
+﻿@model Feedback
+
+<div>
+    <h2 class="text-center">Отзыв @Model.user.Name От @Model.CreateDate.ToString("dd-MM-yyyy")</h2>
+    <table class="table table-bordered table-striped" style="width:100%">
+        <tbody>
+            <tr>
+                <th scope="row">
+                    Имя пользователя
+                </th>
+                <td width="80%">
+                    @Model.user.Name
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    Что понравилось
+                </th>
+                <td width="80%">
+                    @Model.Posivite
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    Что не понравилось
+                </th>
+                <td width="80%">
+                    @Model.Negative
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    Коментраий
+                </th>
+                <td width="80%">
+                    @Model.Comment
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    Оценка
+                </th>
+                <td width="80%">
+                    @Model.Mark
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    Дата создания
+                </th>
+                <td width="80%">
+                    @Model.CreateDate.ToString("dd-MM-yyyy")
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
